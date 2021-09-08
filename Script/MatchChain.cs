@@ -91,140 +91,144 @@ public class MatchChain : MonoBehaviour
                 rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (54 * y));
             }
         }
-        List<Point> isConnected(Point p, bool main)
-        {
-            List<Point> connected = new List<Point>();
-            int val = getValueAtPoint(p);
+        
+        
+        
+        
 
-            Point[] directions =
-            {
-        Point.up,
-        Point.down,
-        Point.right,
-        Point.left
-        };
-            foreach (Point dir in directions) // Checking 2 or more same Shapes in the directions 0x000
-            {
-                List<Point> line = new List<Point>();
-                int same = 0;
-                for (int i = 0; i < 3; i++)
-                {
-                    Point check = Point.Add(p, Point.mult(dir, i));
-                    if (getValueAtPoint(check) == val)
-                    {
-                        line.Add(check);
-                        same++;
-                    }
-                }
-                if (same > 1)// if there more than 1 of the same shape in the direction then we know it is a match
-                {
-                    AddPoint(ref connected, line);// Add these points to the overaching connected list
-                }
-            }
 
-            for (int i = 0; i < 2; i++) // Checking if we are in the middle of two of the same shapes
-            {
-                List<Point> line = new List<Point>();
-                int same = 0;
-                Point[] check = { Point.Add(p, directions[i]), Point.Add(p, directions[i + 2]) };
-                foreach (Point next in check)// Check bothSides of the piece, if they are same value,add them to the list
-                    if (getValueAtPoint(next) == val)
-                    {
-                        line.Add(next);
-                        same++;
-                    }
 
-                if (same > 1)
-                {
-                    AddPoint(ref connected, line);
-                }
-            }
-            for (int i = 0; i < 4; i++) // check for 2x2
-            {
-                List<Point> square = new List<Point>();
-                int same = 0;
-                int next = i + 1;
-                if (next >= 4)
-                    next -= 4;
-                Point[] check = { Point.Add(p, directions[i]), Point.Add(p, directions[next]), Point.Add(p, Point.Add(directions[i], directions[next])) };
-                foreach (Point point in check)// Check all sides of the piece, if they are same value,add them to the list
-                    if (getValueAtPoint(point) == val)
-                    {
-                        square.Add(point);
-                        same++;
-                    }
-                if (same > 2)
-                    AddPoint(ref connected, square);
-            }
-            if (main) // check for other matches along the current match
-            {
-                for (int i = 0; i < connected.Count; i++)
-                {
-                    AddPoint(ref connected, isConnected(connected[i], false));
-                }
-            }
-            if (connected.Count > 0)
-                connected.Add(p);
-            return connected;
-        }
-        void AddPoint(ref List<Point> points, List<Point> add)
-        {
-            foreach (Point p in add)
-            {
-                bool doadd = true;
-
-                for (int i = 0; i < add.Count; i++)
-                {
-                    if (add[i].Equals(p))
-                    {
-                        doadd = false;
-                        break;
-                    }
-                }
-                if (doadd) points.Add(p);
-
-            }
-        }
-        int fillPiece()
-        {
-            int val = 0;
-            val = (random.Next(0, 100) / (100 / pieces.Length) + 1);
-            return val;
-        }
-        int getValueAtPoint(Point p)
-        {
-            if (p.x < 0 || p.x >= width || p.y < 0 || p.y > height) return -1;
-            return boar[p.x, p.y].value;
-        }
-        int newValue(ref List<int> remove)
-        {
-            List<int> availabe = new List<int>();
-            for (int i = 0; i < pieces.Length; i++)
-            {
-                availabe.Add(i + 1);
-            }
-            foreach (int i in remove)
-                availabe.Remove(i);
-            if (availabe.Count <= 0) return 0;
-            return availabe[random.Next(0, availabe.Count)];
-        }
-        void setvalureAtPoint(Point p, int v)
-        {
-            boar[p.x, p.y].value = v;
-        }
     }
-
-    
-}
-[System.Serializable]
-public class Node
-{
-    public int value;
-    public Point index;
-    public Node(int v, Point i)
+    void AddPoint(ref List<Point> points, List<Point> add)
     {
-        value = v;
-        index = i;
+        foreach (Point p in add)
+        {
+            bool doadd = true;
 
+            for (int i = 0; i < add.Count; i++)
+            {
+                if (add[i].Equals(p))
+                {
+                    doadd = false;
+                    break;
+                }
+            }
+            if (doadd) points.Add(p);
+
+        }
+    }
+    void setvalureAtPoint(Point p, int v)
+    {
+        boar[p.x, p.y].value = v;
+    }
+    List<Point> isConnected(Point p, bool main)
+    {
+        List<Point> connected = new List<Point>();
+        int val = getValueAtPoint(p);
+
+        Point[] directions =
+        {
+                Point.up,
+                Point.down,
+                Point.right,
+                Point.left
+            };
+        foreach (Point dir in directions) // Checking 2 or more same Shapes in the directions 0x000
+        {
+            List<Point> line = new List<Point>();
+            int same = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                Point check = Point.Add(p, Point.mult(dir, i));
+                if (getValueAtPoint(check) == val)
+                {
+                    line.Add(check);
+                    same++;
+                }
+            }
+            if (same > 1)// if there more than 1 of the same shape in the direction then we know it is a match
+            {
+                AddPoint(ref connected, line);// Add these points to the overaching connected list
+            }
+        }
+
+        for (int i = 0; i < 2; i++) // Checking if we are in the middle of two of the same shapes
+        {
+            List<Point> line = new List<Point>();
+            int same = 0;
+            Point[] check = { Point.Add(p, directions[i]), Point.Add(p, directions[i + 2]) };
+            foreach (Point next in check)// Check bothSides of the piece, if they are same value,add them to the list
+                if (getValueAtPoint(next) == val)
+                {
+                    line.Add(next);
+                    same++;
+                }
+
+            if (same > 1)
+            {
+                AddPoint(ref connected, line);
+            }
+        }
+        for (int i = 0; i < 4; i++) // check for 2x2
+        {
+            List<Point> square = new List<Point>();
+            int same = 0;
+            int next = i + 1;
+            if (next >= 4)
+                next -= 4;
+            Point[] check = { Point.Add(p, directions[i]), Point.Add(p, directions[next]), Point.Add(p, Point.Add(directions[i], directions[next])) };
+            foreach (Point point in check)// Check all sides of the piece, if they are same value,add them to the list
+                if (getValueAtPoint(point) == val)
+                {
+                    square.Add(point);
+                    same++;
+                }
+            if (same > 2)
+                AddPoint(ref connected, square);
+        }
+        if (main) // check for other matches along the current match
+        {
+            for (int i = 0; i < connected.Count; i++)
+            {
+                AddPoint(ref connected, isConnected(connected[i], false));
+            }
+        }
+        if (connected.Count > 0)
+            connected.Add(p);
+        return connected;
+    }
+    int fillPiece()
+    {
+        int val = 0;
+        val = (random.Next(0, 100) / (100 / pieces.Length) + 1);
+        return val;
+    }
+    int getValueAtPoint(Point p)
+    {
+        if (p.x < 0 || p.x >= width || p.y < 0 || p.y > height) return -1;
+        return boar[p.x, p.y].value;
+    }
+    int newValue(ref List<int> remove)
+    {
+        List<int> availabe = new List<int>();
+        for (int i = 0; i < pieces.Length; i++)
+        {
+            availabe.Add(i + 1);
+        }
+        foreach (int i in remove)
+            availabe.Remove(i);
+        if (availabe.Count <= 0) return 0;
+        return availabe[random.Next(0, availabe.Count)];
     }
 }
+    [System.Serializable]
+    public class Node
+    {
+        public int value;
+        public Point index;
+        public Node(int v, Point i)
+        {
+            value = v;
+            index = i;
+        }
+    }
