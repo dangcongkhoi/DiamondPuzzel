@@ -10,6 +10,8 @@ public class GridManager : MonoBehaviour
     public int GridDimension = 8;
     public float Distance = 1.0f;
     private GameObject[,] Grid;
+    public static GridManager Instance { get; private set; }
+    void Awake() { Instance = this; }
     void Start()
     {
         Grid = new GameObject[GridDimension, GridDimension];
@@ -22,6 +24,7 @@ public class GridManager : MonoBehaviour
         
         Vector3 positionOffset = transform.position - new Vector3(GridDimension * Distance / 2.0f, GridDimension * Distance / 2.0f, 0); // 1
         for (int row = 0; row < GridDimension; row++)
+        {
             for (int column = 0; column < GridDimension; column++) // 2
             {
                 List<Sprite> possibleSprites = new List<Sprite>(); // 1
@@ -40,14 +43,21 @@ public class GridManager : MonoBehaviour
                 {
                     possibleSprites.Remove(down1);
                 }
+
+
                 GameObject newTile = Instantiate(TilePrefab); // 3
                 SpriteRenderer renderer = newTile.GetComponent<SpriteRenderer>(); // 4
                 renderer.sprite = Sprites[Random.Range(0, Sprites.Count)]; // 5
                 newTile.transform.parent = transform; // 6
+                Tile tile = newTile.AddComponent<Tile>();
+                tile.Position = new Vector2Int(column, row);
                 newTile.transform.position = new Vector3(column * Distance, row * Distance, 0) + positionOffset; // 7
 
                 Grid[column, row] = newTile; // 8
             }
+        }
+
+
         
     }
     Sprite GetSpriteAt(int column, int row)
@@ -59,5 +69,20 @@ public class GridManager : MonoBehaviour
         SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
         
         return renderer.sprite;
+    }
+    public void SwapTiles(Vector2Int tile1Position, Vector2Int tile2Position) // 1
+    {
+
+        // 2
+        GameObject tile1 = Grid[tile1Position.x, tile1Position.y];
+        SpriteRenderer renderer1 = tile1.GetComponent<SpriteRenderer>();
+
+        GameObject tile2 = Grid[tile2Position.x, tile2Position.y];
+        SpriteRenderer renderer2 = tile2.GetComponent<SpriteRenderer>();
+
+        // 3
+        Sprite temp = renderer1.sprite;
+        renderer1.sprite = renderer2.sprite;
+        renderer2.sprite = temp;
     }
 }
