@@ -91,6 +91,13 @@ public class MatchChain : MonoBehaviour
                 rect.anchoredPosition = new Vector2(32 + (64 * x), -32 - (54 * y));
             }
         }
+        
+        
+        
+        
+
+
+
     }
     void AddPoint(ref List<Point> points, List<Point> add)
     {
