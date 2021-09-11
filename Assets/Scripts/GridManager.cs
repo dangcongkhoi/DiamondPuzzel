@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class GridManager : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -10,8 +10,51 @@ public class GridManager : MonoBehaviour
     public int GridDimension = 8;
     public float Distance = 1.0f;
     private GameObject[,] Grid;
+
+
+
+    
+
+    public int StartingMoves = 50; // 2
+    private int _numMoves; // 3
+    public int NumMoves
+    {
+        get
+        {
+            return _numMoves;
+        }
+
+        set
+        {
+            _numMoves = value;
+            MovesText.text = _numMoves.ToString();
+        }
+    }
+
+    private int _score;
+    public int Score
+    {
+        get
+        {
+            return _score;
+        }
+
+        set
+        {
+            _score = value;
+            ScoreText.text = _score.ToString();
+        }
+    }
+    public GameObject GameOverMenu; // 2
+    public TextMeshProUGUI MovesText;
+    public TextMeshProUGUI ScoreText;
     public static GridManager Instance { get; private set; }
-    void Awake() { Instance = this; }
+    void Awake() { 
+        Instance = this;
+        Score = 0;
+        NumMoves = StartingMoves;
+        GameOverMenu.SetActive(false);
+    }
     void Start()
     {
         Grid = new GameObject[GridDimension, GridDimension];
@@ -94,8 +137,24 @@ public class GridManager : MonoBehaviour
         }
         else
         {
-            FillHoles();
+            NumMoves--;
+            do
+            {
+                FillHoles();
+            } while (CheckMatches());
+            if (NumMoves <= 0)
+            {
+                NumMoves = 0;
+                GameOver();
+            }
+            
         }
+    }
+    void GameOver()
+    {
+        Debug.Log("GameOver");
+        PlayerPrefs.SetInt("score", Score);
+        GameOverMenu.SetActive(true);
     }
     SpriteRenderer GetSpriteRendererAt(int column, int row)
     {
@@ -135,6 +194,7 @@ public class GridManager : MonoBehaviour
         {
             renderer.sprite = null;
         }
+        Score += matchedTiles.Count;
         return matchedTiles.Count > 0; // 8
     }
 
