@@ -408,6 +408,7 @@ public class GridManager : MonoBehaviour
 
         foreach (SpriteRenderer renderer in matchedTiles) // 7
         {
+            renderer.transform.GetChild(0).gameObject.SetActive(true);
             renderer.sprite = null;
         }
         Score += matchedTiles.Count;
