@@ -194,7 +194,7 @@ public class GridManager : MonoBehaviour
         }
         if (gemCanBlowUP == 0)
         {
-            GameOver();
+            Debug.Log("Gem Can't move anymore, Please");
         }
         Debug.Log("Gem can be Moved " + gemCanBlowUP);
         gemCanBlowUP = 0;
