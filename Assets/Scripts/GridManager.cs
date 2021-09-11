@@ -10,10 +10,10 @@ public class GridManager : MonoBehaviour
     public int GridDimension = 8;
     public float Distance = 1.0f;
     private GameObject[,] Grid;
+    HashSet<SpriteRenderer> matchedTilesRemaining = new HashSet<SpriteRenderer>();
 
 
 
-    
 
     public int StartingMoves = 50; // 2
     private int _numMoves; // 3
@@ -59,6 +59,8 @@ public class GridManager : MonoBehaviour
     {
         Grid = new GameObject[GridDimension, GridDimension];
         InitGrid();
+        SoundManager.Instance.PlaySound(SoundType.TypeGameOver);
+        //TiteCheck();
     }
 
     // Update is called once per frame
@@ -128,6 +130,8 @@ public class GridManager : MonoBehaviour
         Sprite temp = renderer1.sprite;
         renderer1.sprite = renderer2.sprite;
         renderer2.sprite = temp;
+        
+        SoundManager.Instance.PlaySound(SoundType.TypeMove);
         bool changesOccurs = CheckMatches();
         if (!changesOccurs)
         {
@@ -137,6 +141,7 @@ public class GridManager : MonoBehaviour
         }
         else
         {
+            SoundManager.Instance.PlaySound(SoundType.TypePop);
             NumMoves--;
             do
             {
@@ -150,11 +155,13 @@ public class GridManager : MonoBehaviour
             
         }
     }
+
     void GameOver()
     {
         Debug.Log("GameOver");
         PlayerPrefs.SetInt("score", Score);
         GameOverMenu.SetActive(true);
+        SoundManager.Instance.PlaySound(SoundType.TypeGameOver);
     }
     SpriteRenderer GetSpriteRendererAt(int column, int row)
     {
@@ -165,6 +172,231 @@ public class GridManager : MonoBehaviour
         SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
         return renderer;
     }
+    int gemCanBlowUP = 0;
+    public void TiteCheck()
+    {
+        
+        
+        /*GetSpriteRendererAt(0, 0);//
+        GetSpriteRendererAt(1, 0);
+        SpriteRenderer renderer1 = GetSpriteRendererAt(0, 0);
+        SpriteRenderer renderer2 = GetSpriteRendererAt(1, 0);
+        Sprite temp = renderer1.sprite;
+        renderer1.sprite = renderer2.sprite;
+        renderer2.sprite = temp;
+        bool changesOccurs = CheckBoarMatches();
+        if (!changesOccurs)
+        {
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+        }*/
+        for (int row = 0; row < GridDimension; row++)
+        {
+            for (int column = 0; column < GridDimension; column++) // 2
+            {
+                
+
+                SpriteRenderer renderer1 = GetSpriteRendererAt(row, column);
+                //Debug.Log("row: "+row+" column: "+column);
+                CheckTiteUp(renderer1, row, column);
+                CheckTiteDown(renderer1, row, column);
+                CheckTiteLeft(renderer1, row, column);
+                CheckTiteRight(renderer1, row, column);
+                
+                //Debug.Log("TiteCheck");
+                
+            }
+        }
+        if (gemCanBlowUP == 0)
+        {
+            GameOver();
+        }
+        Debug.Log("Gem can be Moved " + gemCanBlowUP);
+        gemCanBlowUP = 0;
+        
+    }
+
+    public void CheckTiteUp(SpriteRenderer renderer1, int column, int row)
+    {
+        int resultColumn = column + 1;
+
+
+        if (resultColumn == 8 || resultColumn == -1)
+            return;
+            SpriteRenderer renderer2 = GetSpriteRendererAt(column + 1, row);
+            Sprite temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            bool changesOccurs = CheckBoarMatches();
+            if (changesOccurs)
+            {
+                gemCanBlowUP += 1;
+            }
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            //Debug.Log("Up Check");
+        
+
+        /*bool changesOccurs = CheckMatches();
+        if (!changesOccurs)
+        {
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound(SoundType.TypePop);
+            NumMoves--;
+            do
+            {
+                FillHoles();
+            } while (CheckMatches());
+            if (NumMoves <= 0)
+            {
+                NumMoves = 0;
+                GameOver();
+            }
+
+        }*/
+    }
+    public void CheckTiteDown(SpriteRenderer renderer1, int column, int row)
+    {
+        
+        int columnResult = column - 1;
+
+        if (columnResult == 8 || columnResult == -1)
+            return;
+            SpriteRenderer renderer2 = GetSpriteRendererAt(column - 1, row);
+            Sprite temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            bool changesOccurs = CheckBoarMatches();
+            if (changesOccurs)
+            {
+                gemCanBlowUP += 1;
+            }
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            //Debug.Log("CheckTiteDown");
+        
+        /*bool changesOccurs = CheckMatches();
+        if (!changesOccurs)
+        {
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound(SoundType.TypePop);
+            NumMoves--;
+            do
+            {
+                FillHoles();
+            } while (CheckMatches());
+            if (NumMoves <= 0)
+            {
+                NumMoves = 0;
+                GameOver();
+            }
+
+        }*/
+    }
+    public void CheckTiteLeft(SpriteRenderer renderer1, int column, int row)
+    {
+        int rowResult = row - 1;
+
+        if (rowResult == 8 || rowResult == -1)
+            return;
+
+
+            SpriteRenderer renderer2 = GetSpriteRendererAt(column, row - 1);
+            Sprite temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            bool changesOccurs = CheckBoarMatches();
+            if (changesOccurs)
+            {
+                gemCanBlowUP += 1;
+            }
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            //Debug.Log("CheckTiteLeft");
+        
+        /*bool changesOccurs = CheckMatches();
+        if (!changesOccurs)
+        {
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound(SoundType.TypePop);
+            NumMoves--;
+            do
+            {
+                FillHoles();
+            } while (CheckMatches());
+            if (NumMoves <= 0)
+            {
+                NumMoves = 0;
+                GameOver();
+            }
+
+        }*/
+    }
+    public void CheckTiteRight(SpriteRenderer renderer1, int column, int row)
+    {
+        int rowResult = row + 1;
+
+        if (rowResult == 8 || rowResult == -1)
+            return;
+
+
+            SpriteRenderer renderer2 = GetSpriteRendererAt(column, row + 1);
+            Sprite temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            bool changesOccurs = CheckBoarMatches();
+            if (changesOccurs)
+            {
+                gemCanBlowUP += 1;
+            }
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+            //Debug.Log("CheckTiteRight");
+        
+        /*bool changesOccurs = CheckMatches();
+        if (!changesOccurs)
+        {
+            temp = renderer1.sprite;
+            renderer1.sprite = renderer2.sprite;
+            renderer2.sprite = temp;
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound(SoundType.TypePop);
+            NumMoves--;
+            do
+            {
+                FillHoles();
+            } while (CheckMatches());
+            if (NumMoves <= 0)
+            {
+                NumMoves = 0;
+                GameOver();
+            }
+
+        }*/
+    }
+    
     bool CheckMatches()
     {
         HashSet<SpriteRenderer> matchedTiles = new HashSet<SpriteRenderer>(); // 1
@@ -196,6 +428,36 @@ public class GridManager : MonoBehaviour
         }
         Score += matchedTiles.Count;
         return matchedTiles.Count > 0; // 8
+    }
+     
+    bool CheckBoarMatches()
+    {
+        HashSet<SpriteRenderer> matchedTiles = new HashSet<SpriteRenderer>(); // 1
+        for (int row = 0; row < GridDimension; row++)
+        {
+            for (int column = 0; column < GridDimension; column++) // 2
+            {
+                SpriteRenderer current = GetSpriteRendererAt(column, row); // 3
+
+                List<SpriteRenderer> horizontalMatches = FindColumnMatchForTile(column, row, current.sprite); // 4
+                if (horizontalMatches.Count >= 2)
+                {
+                    matchedTiles.UnionWith(horizontalMatches);
+                    matchedTiles.Add(current); // 5
+                    
+                }
+
+                List<SpriteRenderer> verticalMatches = FindRowMatchForTile(column, row, current.sprite); // 6
+                if (verticalMatches.Count >= 2)
+                {
+                    matchedTiles.UnionWith(verticalMatches);
+                    matchedTiles.Add(current);
+                    
+                }
+            }
+        }
+        //Debug.Log("CheckBoarMatches");
+        return matchedTiles.Count > 0;
     }
 
     List<SpriteRenderer> FindColumnMatchForTile(int col, int row, Sprite sprite)
@@ -246,5 +508,5 @@ public class GridManager : MonoBehaviour
                 }
             }
     }
-
+    
 }

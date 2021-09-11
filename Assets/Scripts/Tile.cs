@@ -36,17 +36,23 @@ public class Tile : MonoBehaviour
             {
                 GridManager.Instance.SwapTiles(Position, selected.Position);
                 selected = null;
+                GridManager.Instance.TiteCheck();
             }
             else
             {
+                SoundManager.Instance.PlaySound(SoundType.TypeSelect);
                 selected = this;
                 Select();
+                GridManager.Instance.TiteCheck();
             }
         }
         else
         {
+            SoundManager.Instance.PlaySound(SoundType.TypeSelect);
             selected = this;
             Select();
+            GridManager.Instance.TiteCheck();
         }
+        
     }
 }
